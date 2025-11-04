@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import getIcon from "../icons"
 
@@ -6,12 +6,17 @@ import DisplayElement from "./DisplayElement"
 
 export default function Editor({ elements, setElements }) {
     const [history, setHistory ] = useState( [] );
-    const [ displayedElements, setDisplayedElements ] = useState(elements);
+    const [ displayedElements, setDisplayedElements ] = useState([]);
 
     const goBack = () => {
-        history.pop();
-        setDisplayedElements( history[ history.length - 1 ] || elements );
+        const newHistory = [...history];
+        newHistory.pop();
+        setHistory(newHistory);
     }
+
+    useEffect( () => {
+        setDisplayedElements( history[ history.length - 1 ] || elements );
+    }, [history] )
 
     return (
         <section className="relative">
@@ -21,14 +26,28 @@ export default function Editor({ elements, setElements }) {
                         <DisplayElement 
                             key={ index }
                             element={ element }
-                            setElement={ setElements }
-                            setDisplayedElements={setDisplayedElements}
+                            setElement={ (elements) => {
+                                const newElements = [...elements];
+                                
+                                /*
+                                trovare il modo di aggiornare l elemento trascendendo la cronologia 
+                                probabilmente bisogna cambiare dagli index ad array
+                                oppure servono entrambi
+                                */
+
+                                setElements(newElements);
+                            } }
+                            setDisplayedElements={(elementsIndex) => {
+                                const newHistory = [...history];
+                                newHistory.push(elementsIndex);
+                                setHistory(newHistory);
+                            }}
                         />
                     ))
                 }
             </div>
             {
-                history.length > 0 &&
+                history.length > 1 &&
                 <button className="absolute bottom-12 right-2 flex justify-center items-center border-2 border-[#ACACAC] rounded-full w-10 h-10 bg-white hover:bg-[#F3F3F3]"
                     onClick={ () => goBack() }
                 >
