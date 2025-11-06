@@ -1,5 +1,3 @@
-import { useState } from "react"
-
 import getIcon from "../icons"
 
 import TextEditor from "./ElementsEditor/TextEditor"
@@ -9,7 +7,7 @@ import TableEditor from "./ElementsEditor/TableEditor"
 import ListEditor from "./ElementsEditor/ListEditor"
 import SpaceEditor from "./ElementsEditor/SpaceEditor"
 
-export default function DisplayElement({ element, setElements, setDisplayedElements }) {
+export default function DisplayElement({ element, setElement, setDisplayedElements }) {
     const types = {
       section: () => (<></>),
       row: () => (<></>),
@@ -22,7 +20,7 @@ export default function DisplayElement({ element, setElements, setDisplayedEleme
     };
 
     return (
-        <div className="my-1 border-2 border-[#ACACAC] rounded">
+        <div className="group my-1 border-2 border-[#ACACAC] rounded">
             <header className="flex gap-2.5 py-2 px-4 hover:bg-[#F3F3F3]">
                 <div className="cursor-grab" >
                     { getIcon("bars") }
@@ -30,10 +28,8 @@ export default function DisplayElement({ element, setElements, setDisplayedEleme
                 <button>{element.type}</button>
             </header>
             {
-                types[element.type]({ element, setElements })
+                types[element.type]({ element, setElement })
             }
         </div>
     )
 }
-
-/* setElements passato agli editor singoli bisogna sostituirlo con una funzione che passi a setElements tutti gli elementi e non solo quello singolo */

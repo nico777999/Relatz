@@ -44,7 +44,7 @@ export default function newRelatz() {
             {
                 type: "line",
                 color: "#000000",
-                thickness: 0.5,
+                thickness: 1,
                 width: 100,
                 align: "center",
                 style: "solid",
