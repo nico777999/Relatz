@@ -14,11 +14,13 @@ export default function newRelatz() {
         elements: [
             {
                 type: "row",
+                name: "Riga",
                 justify: "space-between",
                 gap: 10,
                 elements: [
                 {
                     type: "text",
+                    name: "Testo",
                     content: "[b]{title}[/b]",
                     align: "left",
                     fontFamily: "Helvetica",
@@ -27,6 +29,7 @@ export default function newRelatz() {
                 },
                 {
                     type: "text",
+                    name: "Testo",
                     content: "{author}",
                     align: "center",
                     fontFamily: "Times-Roman",
@@ -34,6 +37,7 @@ export default function newRelatz() {
                 },
                 {
                     type: "text",
+                    name: "Testo",
                     content: "Pag. {pageNumber} di {totalPages}",
                     align: "right",
                     fontFamily: "Helvetica",
@@ -43,6 +47,7 @@ export default function newRelatz() {
             },
             {
                 type: "line",
+                name: "Linea",
                 color: "#000000",
                 thickness: 1,
                 width: 100,

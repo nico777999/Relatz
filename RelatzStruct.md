@@ -47,7 +47,7 @@ const Relatz = {
 ```js
 {
   type: "section",
-  title: <testo>,
+  name: "sezione",
   elements: [
     // qualsiasi altro elemento, inclusi altre sezioni
   ]
@@ -59,7 +59,7 @@ Esempio di sezione annidata:
 ```js
 {
   type: "section",
-  title: "Capitolo 1",
+  name: "Capitolo 1",
   elements: [
     { type: "text", content: "Introduzione..." },
     {
@@ -81,6 +81,7 @@ Esempio di sezione annidata:
 ```js
 {
   type: "row",
+  name: "Riga"
   justify: "start" | "center" | "end" | "space-between",
   gap: 10,
   elements: [
@@ -95,6 +96,7 @@ Esempio di sezione annidata:
 ```js
 {
   type: "text",
+  name: "Testo",
   content: "",
   align: "left" | "center" | "right" | "justify",
   fontFamily: "Helvetica" | "Times-Roman" | "Courier",
@@ -109,7 +111,8 @@ Esempio di sezione annidata:
 ### 🔹 CONTENITORE IMMAGINI
 ```js
 {
-  type: "imageContainer",
+  type: "imagesContainer",
+  name: "Contenitore di immagini",
   height: <number>,
   align: "left" | "center" | "right" | "justify",
   layout: "row" | "column",
@@ -131,6 +134,7 @@ Esempio di sezione annidata:
 ```js
 {
   type: "line",
+  name: "Linea",
   color: "#000000",
   thickness: 1,
   width: <number>, // rappresenta percentuale
@@ -147,6 +151,7 @@ Esempio di sezione annidata:
 ```js
 {
   type: "table",
+  name: "Tabella",
   dimensions: {
     rows: <number>,
     columns: <number>,
@@ -176,6 +181,7 @@ Esempio di sezione annidata:
 ```js
 {
   type: "list",
+  name: "Lista",
   ordered: true,
   simbol: "-",
   elements: [
@@ -191,6 +197,7 @@ Esempio di sezione annidata:
 ```js
 {
   type: "space",
+  name: "Spazio",
   size: 20,
 }
 ```

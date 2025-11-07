@@ -8,8 +8,9 @@ export default function LineEditor({element, setElement}) {
     const [color, setColor] = useState(element.color);
 
     useEffect(() => {
-        const element = {
+        const newElement = {
             type: "line",
+            name: element.name,
             color: color,
             thickness: thickness,
             width: width,
@@ -18,7 +19,7 @@ export default function LineEditor({element, setElement}) {
             margin: { top: 5, bottom: 5 }
         };
 
-        setElement( element );
+        setElement( newElement );
     }, [
         thickness,
         width,
@@ -36,7 +37,7 @@ export default function LineEditor({element, setElement}) {
                     id="thickness" 
                     value={thickness} 
                     onChange={(e) => setThickness(e.target.value)}
-                    className="grow px-3 py-1 border border-[#ACACAC] rounded" 
+                    className="min-w-1/2 px-3 py-1 border border-[#ACACAC] rounded" 
                 />
             </div>
             <div className="flex justify-between items-center gap-2.5 mb-1">
@@ -46,7 +47,9 @@ export default function LineEditor({element, setElement}) {
                     id="width" 
                     value={width} 
                     onChange={(e) => setWidth(e.target.value)}
-                    className="grow px-3 py-1 border border-[#ACACAC] rounded" 
+                    min={0}
+                    max={100}
+                    className="min-w-1/2 px-3 py-1 border border-[#ACACAC] rounded" 
                 />
             </div>
             <div className="flex justify-between items-center gap-2.5 mb-1">
@@ -55,7 +58,7 @@ export default function LineEditor({element, setElement}) {
                     id="align" 
                     value={align}
                     onChange={(e) => setAlign(e.target.value)}
-                    className="grow px-3 py-1 border border-[#ACACAC] rounded"
+                    className="min-w-1/2 px-3 py-1 border border-[#ACACAC] rounded"
                 >
                     <option value="left">Sinistra</option>
                     <option value="center">Centro</option>
@@ -68,7 +71,7 @@ export default function LineEditor({element, setElement}) {
                     id="style" 
                     value={style}
                     onChange={(e) => setStyle(e.target.value)}
-                    className="grow px-3 py-1 border border-[#ACACAC] rounded"
+                    className="min-w-1/2 px-3 py-1 border border-[#ACACAC] rounded"
                 >
                     <option value="solid">Solida</option>
                     <option value="dashed">Tratteggiata</option>
@@ -82,7 +85,7 @@ export default function LineEditor({element, setElement}) {
                     id="color" 
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
-                    className="grow h-8" 
+                    className="min-w-1/2 h-8" 
                 />
             </div>
         </div>
