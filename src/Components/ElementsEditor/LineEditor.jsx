@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 export default function LineEditor({ element, setElement }) {
+  
   const [thickness, setThickness] = useState(element.thickness);
   const [width, setWidth] = useState(element.width);
   const [align, setAlign] = useState(element.align);
@@ -12,7 +13,7 @@ export default function LineEditor({ element, setElement }) {
       name: element.name,
       color: color,
       thickness: thickness,
-      width: width,
+      width: Math.max(Math.min(100, width), 0), // per evitare numeri negati o maggiori di 100
       align: align,
       style: style,
       margin: { top: 5, bottom: 5 },

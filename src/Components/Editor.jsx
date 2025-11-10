@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import getIcon from "../icons";
 import DisplayElement from "./DisplayElement";
 
@@ -101,7 +101,7 @@ export default function Editor({ elements, setElements }) {
     ],
   ];
 
-  const [history, setHistory] = useState([[elements, null]]);
+  const [history, setHistory] = useState([]);
   const [displayedElements, setDisplayedElements] = useState(elements);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -113,74 +113,84 @@ export default function Editor({ elements, setElements }) {
   };
 
   useEffect(() => {
-    const last = history[history.length - 1];
-    setDisplayedElements(last[0]);
-  }, [history]);
 
-  // Funzione per ricostruire l'albero
-  const getNode = useCallback(
-    (parent, historyIndex) => {
-      // Se siamo oltre la fine della history, restituisci il livello corrente
-      if (historyIndex >= history.length) return parent;
+    if( history.length == 0 ){
+      setDisplayedElements(elements);
+      return;
+    } 
 
-      // Se siamo all'ultimo livello, restituisci direttamente gli elementi
-      if (historyIndex === history.length - 1) {
-        return history[historyIndex][0];
-      }
+    let newDisplayedElements = [...elements];
+    for( var i = 0; i < history.length; i++){
+      newDisplayedElements = newDisplayedElements[ history[i] ].elements;
+    }
 
-      const updatedChildren = getNode(childElements, historyIndex + 1);
+    setDisplayedElements(newDisplayedElements);
 
-      const newParent = [...parent];
-      newParent[parentIndex] = {
-        ...newParent[parentIndex],
-        elements: updatedChildren,
-      };
+  }, [history])
 
-      return newParent;
-    },
-    [history]
-  );
-
-  // Funzione per aggiornare un elemento
-  const handleSetElement = useCallback(
-    (updatedElement, index) => {
-      const newDisplayed = [...displayedElements];
-      newDisplayed[index] = updatedElement;
-
-      const newHistory = [...history];
-      newHistory[newHistory.length - 1][0] = newDisplayed;
-      setHistory(newHistory);
-
-      const newRoot = getNode(history[0][0], 1);
-      setElements(newRoot);
-    },
-    [displayedElements, history, getNode, setElements]
-  );
-
-  // Funzione per navigare nei figli
-  const handleSetDisplayedElements = useCallback(
-    (childElements, childIndex) => {
-      const newHistory = [...history];
-      newHistory.push([childElements, childIndex]);
-      setHistory(newHistory);
-    },
-    [history]
-  );
-
-  // Funzione per creare un nuovo elemento
-  const addElement = useCallback((elementIndex) => {
-    const newDisplayed = [...displayedElements];
-    newDisplayed.push(elementsTypes[elementIndex][0]);
-
+  const handleSetDisplayedElements = (index) => {
     const newHistory = [...history];
-    newHistory[newHistory.length - 1][0] = newDisplayed;
+    newHistory.push(index);
     setHistory(newHistory);
+  }
 
-    const newRoot = getNode(history[0][0], 1);
+  const getNewRoot = (newElements, treePos = 0) => {
+    if (history.length === 0) return newElements;
+
+    const recurse = (current, pos) => {
+      const cloned = Array.isArray(current) ? [...current] : [];
+      const idx = history[pos];
+
+      if (pos === history.length - 1) {
+        const parent = cloned[idx] ? { ...cloned[idx] } : { elements: [] };
+        parent.elements = newElements;
+        cloned[idx] = parent;
+        return cloned;
+      } else {
+        const parent = cloned[idx] ? { ...cloned[idx] } : { elements: [] };
+        parent.elements = recurse(parent.elements || [], pos + 1);
+        cloned[idx] = parent;
+        return cloned;
+      }
+    };
+
+    return recurse(elements, treePos);
+  };
+
+  const handleSetElement = (updatedElement, index) => {
+    const newDisplayed = [...displayedElements];
+    newDisplayed[index] = updatedElement;
+    const newRoot = getNewRoot(newDisplayed);
     setElements(newRoot);
+    setDisplayedElements(newDisplayed);
+  };
 
+  const addElement = (typeIndex) => {
+    const template = elementsTypes[typeIndex][0];
+    const newElement = JSON.parse(JSON.stringify(template));
+    const newElements = [...displayedElements, newElement];
+    const newRoot = getNewRoot(newElements);
+    setElements(newRoot);
+    setDisplayedElements(newElements);
     setIsPopupOpen(false);
-  });
+  };
+
+  const deleteElement = (index) => {
+    const newElements = displayedElements.filter((_, currentIndex) => currentIndex != index);
+    const newRoot = getNewRoot(newElements);
+    setElements(newRoot);
+    setDisplayedElements(newElements);
+  }
+
+  const moveElement = (move, index) => {
+    const newElements = [...displayedElements];
+    const temp = newElements[index];
+    newElements[index] = newElements[index + move];
+    newElements[index + move] = temp;
+    const newRoot = getNewRoot(newElements);
+    setElements(newRoot);
+    setDisplayedElements(newElements);
+  }
 
   return (
     <section className="relative">
@@ -190,14 +200,16 @@ export default function Editor({ elements, setElements }) {
             key={index}
             element={element}
             setElement={(updated) => handleSetElement(updated, index)}
-            setDisplayedElements={(newDisplayedElements) =>
-              handleSetDisplayedElements(newDisplayedElements, index)
+            setDisplayedElements={() =>
+              handleSetDisplayedElements(index)
             }
+            deleteElement={() => deleteElement(index)}
+            moveElement={(move) => moveElement(move, index)}
           />
         ))}
       </div>
 
-      {history.length > 1 && (
+      {history.length > 0 && (
         <button
           className="absolute bottom-12 right-2 flex justify-center items-center border-2 border-[#ACACAC] rounded-full w-10 h-10 bg-white hover:bg-[#F3F3F3]"
           onClick={goBack}
