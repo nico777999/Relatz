@@ -183,6 +183,10 @@ export default function Editor({ elements, setElements }) {
   };
 
   const moveElement = (move, index) => {
+    if( (index == displayedElements.length - 1 && move == 1) || (index == 0 && move == -1) ){
+      return;
+    }
+
     const newElements = [...displayedElements];
     const temp = newElements[index];
     newElements[index] = newElements[index + move];

@@ -5,7 +5,7 @@ import TextDisplay from "../TextModifier/TextDisplay";
 export default function TextEditor({ element, setElement }) {
   const [content, setContent] = useState(element.content);
   const [align, setAlign] = useState(element.align);
-  const [fontFamily, setFontFamily] = useState(element.setFontFamily);
+  const [fontFamily, setFontFamily] = useState(element.fontFamily);
   const [fontSize, setFontSize] = useState(element.fontSize);
   const [lineHeight, setLineHeight] = useState(element.lineHeight);
   const [indent, setIndent] = useState(element.indent);
@@ -13,11 +13,7 @@ export default function TextEditor({ element, setElement }) {
   useEffect(() => {
     setFontSize(Math.max(6, fontSize));
 
-    let num = Math.max(1, lineHeight);
-    if (/\./.test(num) === false) {
-      num = `${num}.00`;
-    }
-    setLineHeight(num);
+    setLineHeight(Math.max(1, lineHeight));
 
     setIndent(Math.max(0, indent));
 
@@ -27,7 +23,7 @@ export default function TextEditor({ element, setElement }) {
       content: content,
       align: align,
       fontFamily: fontFamily,
-      fontSize: fontSize,
+      fontSize: Math.max(6, fontSize),
       lineHeight: lineHeight,
       indent: indent,
     };
@@ -38,6 +34,10 @@ export default function TextEditor({ element, setElement }) {
   return (
     <div className="hidden group-hover:block py-2 px-4">
       <div className="flex flex-col lg:flex-row justify-between items-center gap-2.5 mb-1">
+        <TextDisplay 
+          text={content}
+          setText={setContent}
+        />
         <label htmlFor="align" className="w-full lg:w-[inherit]">
           Allineamento:
         </label>
