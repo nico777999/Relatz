@@ -113,26 +113,24 @@ export default function Editor({ elements, setElements }) {
   };
 
   useEffect(() => {
-
-    if( history.length == 0 ){
+    if (history.length == 0) {
       setDisplayedElements(elements);
       return;
-    } 
+    }
 
     let newDisplayedElements = [...elements];
-    for( var i = 0; i < history.length; i++){
-      newDisplayedElements = newDisplayedElements[ history[i] ].elements;
+    for (var i = 0; i < history.length; i++) {
+      newDisplayedElements = newDisplayedElements[history[i]].elements;
     }
 
     setDisplayedElements(newDisplayedElements);
-
-  }, [history])
+  }, [history]);
 
   const handleSetDisplayedElements = (index) => {
     const newHistory = [...history];
     newHistory.push(index);
     setHistory(newHistory);
-  }
+  };
 
   const getNewRoot = (newElements, treePos = 0) => {
     if (history.length === 0) return newElements;
@@ -176,11 +174,13 @@ export default function Editor({ elements, setElements }) {
   };
 
   const deleteElement = (index) => {
-    const newElements = displayedElements.filter((_, currentIndex) => currentIndex != index);
+    const newElements = displayedElements.filter(
+      (_, currentIndex) => currentIndex != index
+    );
     const newRoot = getNewRoot(newElements);
     setElements(newRoot);
     setDisplayedElements(newElements);
-  }
+  };
 
   const moveElement = (move, index) => {
     const newElements = [...displayedElements];
@@ -190,7 +190,7 @@ export default function Editor({ elements, setElements }) {
     const newRoot = getNewRoot(newElements);
     setElements(newRoot);
     setDisplayedElements(newElements);
-  }
+  };
 
   return (
     <section className="relative">
@@ -200,9 +200,7 @@ export default function Editor({ elements, setElements }) {
             key={index}
             element={element}
             setElement={(updated) => handleSetElement(updated, index)}
-            setDisplayedElements={() =>
-              handleSetDisplayedElements(index)
-            }
+            setDisplayedElements={() => handleSetDisplayedElements(index)}
             deleteElement={() => deleteElement(index)}
             moveElement={(move) => moveElement(move, index)}
           />

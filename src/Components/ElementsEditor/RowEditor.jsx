@@ -7,7 +7,6 @@ export default function RowEditor({
   setElement,
   setDisplayedElements,
 }) {
-    
   const [justify, setJustify] = useState(element.justify);
   const [gap, setGap] = useState(element.gap);
 
@@ -26,7 +25,7 @@ export default function RowEditor({
       <div className="hidden group-hover:block py-2 px-4">
         <div className="flex flex-col lg:flex-row justify-between items-center gap-2.5 mb-1">
           <label htmlFor="gap" className="w-full lg:w-[inherit]">
-            Imposta uno spazio tra gli elementi:
+            Spazio tra gli elementi:
           </label>
           <input
             type="number"
@@ -35,11 +34,11 @@ export default function RowEditor({
             value={gap}
             onChange={(e) => setGap(e.target.value)}
             onBlur={() => {
-                const updated = {
-                    ...element,
-                    gap: Math.max(0, gap),
-                };
-                setElement(updated);
+              const updated = {
+                ...element,
+                gap: Math.max(0, gap),
+              };
+              setElement(updated);
             }}
             className="w-full lg:w-[inherit] lg:min-w-1/2 px-3 py-1 border border-[#ACACAC] rounded"
           />
@@ -53,11 +52,11 @@ export default function RowEditor({
             className="w-full lg:w-[inherit] lg:min-w-1/2 px-3 py-1 border border-[#ACACAC] rounded"
             value={justify}
             onChange={(e) => {
-                const updated = {
-                    ...element,
-                    justify: e.target.value,
-                };
-                setElement(updated);
+              const updated = {
+                ...element,
+                justify: e.target.value,
+              };
+              setElement(updated);
             }}
           >
             <option value="start">Sinistra</option>

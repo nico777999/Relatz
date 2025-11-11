@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 export default function LineEditor({ element, setElement }) {
-  
   const [thickness, setThickness] = useState(element.thickness);
   const [width, setWidth] = useState(element.width);
   const [align, setAlign] = useState(element.align);
@@ -26,7 +25,7 @@ export default function LineEditor({ element, setElement }) {
     <div className="hidden group-hover:block py-2 px-4">
       <div className="flex flex-col lg:flex-row justify-between items-center gap-2.5 mb-1">
         <label htmlFor="thickness" className="w-full lg:w-[inherit]">
-          Imposta altezza:
+          Altezza:
         </label>
         <input
           type="number"
@@ -38,7 +37,7 @@ export default function LineEditor({ element, setElement }) {
       </div>
       <div className="flex flex-col lg:flex-row justify-between items-center gap-2.5 mb-1">
         <label htmlFor="width" className="w-full lg:w-[inherit]">
-          Imposta lunghezza: (in %)
+          Lunghezza: (in %)
         </label>
         <input
           type="number"
