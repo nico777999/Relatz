@@ -6,38 +6,28 @@ export default function TextEditor({ element, setElement }) {
   const [content, setContent] = useState(element.content);
   const [align, setAlign] = useState(element.align);
   const [fontFamily, setFontFamily] = useState(element.fontFamily);
-  const [fontSize, setFontSize] = useState(element.fontSize);
   const [lineHeight, setLineHeight] = useState(element.lineHeight);
-  const [indent, setIndent] = useState(element.indent);
 
   useEffect(() => {
-    setFontSize(Math.max(6, fontSize));
-
-    setLineHeight(Math.max(1, lineHeight));
-
-    setIndent(Math.max(0, indent));
-
     const newElement = {
       type: "text",
       name: element.name,
       content: content,
       align: align,
       fontFamily: fontFamily,
-      fontSize: Math.max(6, fontSize),
-      lineHeight: lineHeight,
-      indent: indent,
+      lineHeight: Math.max(1, lineHeight),
     };
 
     setElement(newElement);
-  }, [content, align, fontFamily, fontSize, lineHeight, indent]);
+  }, [content, align, fontFamily, lineHeight]);
 
   return (
     <div className="hidden group-hover:block py-2 px-4">
-      <div className="flex flex-col lg:flex-row justify-between items-center gap-2.5 mb-1">
-        <TextDisplay 
-          text={content}
-          setText={setContent}
-        />
+      <TextDisplay 
+        text={content}
+        setText={setContent}
+      />
+      <div className="flex flex-col lg:flex-row justify-between items-center gap-2.5 mt-3 mb-1">
         <label htmlFor="align" className="w-full lg:w-[inherit]">
           Allineamento:
         </label>
@@ -67,18 +57,6 @@ export default function TextEditor({ element, setElement }) {
           <option value="Times-Roman">Times Roman</option>
           <option value="Courier">Courier</option>
         </select>
-      </div>
-      <div className="flex flex-col lg:flex-row justify-between items-center gap-2.5 mb-1">
-        <label htmlFor="fontSize" className="w-full lg:w-[inherit]">
-          Dimensione del font:
-        </label>
-        <input
-          type="number"
-          id="fontSize"
-          value={fontSize}
-          onChange={(e) => setFontSize(e.target.value)}
-          className="w-full lg:w-[inherit] lg:min-w-1/2 px-3 py-1 border border-[#ACACAC] rounded"
-        />
       </div>
       <div className="flex flex-col lg:flex-row justify-between items-center gap-2.5 mb-1">
         <label htmlFor="lineHeight" className="w-full lg:w-[inherit]">

@@ -21,19 +21,18 @@ export default function newRelatz() {
             {
               type: "text",
               name: "Titolo",
-              content: "[b]{title}[/b]",
+              content: [],
               align: "left",
               fontFamily: "Helvetica",
-              fontSize: 10,
               lineHeight: 1.2,
             },
             {
               type: "text",
               name: "Autore",
-              content: "{author}",
+              content: [],
               align: "center",
               fontFamily: "Times-Roman",
-              fontSize: 10,
+              lineHeight: 1.2
             },
           ],
         },

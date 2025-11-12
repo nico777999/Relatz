@@ -27,12 +27,10 @@ export default function Editor({ elements, setElements }) {
       {
         type: "text",
         name: "Testo",
-        content: "",
+        content: [],
         align: "left",
         fontFamily: "Helvetica",
-        fontSize: 14,
-        lineHeight: 1.4,
-        indent: 0,
+        lineHeight: 1.4
       },
       "Blocco di testo",
     ],
