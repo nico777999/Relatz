@@ -97,12 +97,21 @@ Esempio di sezione annidata:
 {
   type: "text",
   name: "Testo",
-  content: "",
-  align: "left" | "center" | "right" | "justify",
+  content: [
+    {
+      text: "",
+      fontSize: <number>,
+      bold: true / false,
+      italic: true / false,
+      undeline: true / false,
+      strike: true / false,
+      color: #;
+      bg: # / none,
+    }
+  ],
   fontFamily: "Helvetica" | "Times-Roman" | "Courier",
-  fontSize: <number>,
-  lineHeight: <number>,
-  indent: 0,
+  align: "left" | "center" | "right" | "justify",
+  lineHeight: <number>
 }
 ```
 
@@ -223,15 +232,3 @@ Esempio:
   fontSize: 10
 }
 ```
-
-
-## 🔸Tag di formattazione testo
-
-|     Tag	   |   Effetto   |
-|------------|-------------|
-| [b]...[/b]` | Grassetto |
-| [i]...[/i]	 | Corsivo |
-| [u]...[/u] | Sottolineato |
-| [s]...[/s] | Barrato (strike) |
-| [color=#FF0000]...[/color] | Cambia colore testo |
-| [bgcolor=#FFFF00]...[/bgcolor] | Sfondo evidenziato |
