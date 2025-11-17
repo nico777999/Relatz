@@ -1,25 +1,41 @@
 import { useState, useEffect, useRef } from "react";
 import TextDecoration from "./TextDecoration";
 
-export default function TextDisplay({ text, setText }) {
+export default function TextDisplay({ text = [], setText }) {
   const [selection, setSelection] = useState({
     start: { node: 0, offset: 0 },
     end:   { node: 0, offset: 0 },
   });
 
+  useEffect(() => {
+    const newText = text.filter((element) => element.text.length !== 0);
+
+    if (text.length === 0) {
+      setText([{
+        text: "",
+        fontSize: 16,
+        bold: false,
+        italic: false,
+        underline: false,
+        strike: false,
+        color: "#333",
+        bg: "none",
+      }]);
+    } else if (newText.length !== text.length && text.length !== 1) {
+      setText(newText);
+    }
+  }, [text]);
+
   const editorRef = useRef(null);
 
-  /** Utility: controlla se la selezione è solo un cursore */
   const isCursor = (start, end) =>
     start.node === end.node && start.offset === end.offset;
 
-  /** Utility: aggiorna posizione del cursore dopo inserimento */
   const updateCursor = (start, key) => ({
     start: { node: start.node, offset: start.offset + key.length },
     end:   { node: start.node, offset: start.offset + key.length },
   });
 
-  /** Calcola posizione della selezione */
   const getSelectionPosition = (root) => {
     const sel = window.getSelection();
     if (!sel?.anchorNode || !sel?.focusNode) return;
@@ -44,7 +60,6 @@ export default function TextDisplay({ text, setText }) {
     let startOffset = sel.anchorOffset;
     let endOffset = sel.focusOffset;
 
-    // Selezione invertita → normalizza
     if (startNode > endNode || (startNode === endNode && startOffset > endOffset)) {
       [startNode, endNode] = [endNode, startNode];
       [startOffset, endOffset] = [endOffset, startOffset];
@@ -60,7 +75,6 @@ export default function TextDisplay({ text, setText }) {
     console.log("Nuova selezione:", selection);
   }, [selection]);
 
-  /** Gestione tasti premuti */
   const onKeyDown = (e) => {
     const { key, ctrlKey, metaKey, shiftKey } = e;
     const ctrl = ctrlKey || metaKey;
@@ -72,8 +86,6 @@ export default function TextDisplay({ text, setText }) {
         case "b": return toggleBold();
         case "i": return toggleItalic();
         case "u": return toggleUnderline();
-        case "z": return undo();
-        case "y": return redo();
         case "c": return copySelection();
         case "x": return cutSelection();
         case "v": return pasteClipboard();
@@ -81,16 +93,15 @@ export default function TextDisplay({ text, setText }) {
       }
     }
 
-    if (key === "ArrowLeft")  return moveCursorLeft(shiftKey);
-    if (key === "ArrowRight") return moveCursorRight(shiftKey);
+    if (key === "ArrowLeft")  return setSelection(moveCursorLeft(shiftKey));
+    if (key === "ArrowRight") return setSelection(moveCursorRight(shiftKey));
     if (key === "Backspace")  return handleBackspace();
     if (key === "Delete")     return handleDelete();
     if (key === "Enter")      return insertNewLine();
 
-    if (key.length === 1) return changeText(key);
+    if (key.length === 1) return changeText(key, selection);
   };
 
-  /** Riposiziona manualmente il cursore dopo il rendering */
   useEffect(() => {
     if (!editorRef.current) return;
 
@@ -102,7 +113,6 @@ export default function TextDisplay({ text, setText }) {
     const range = document.createRange();
     const sel = window.getSelection();
 
-    // Selezione estesa o caret singolo
     range.setStart(startSpan.firstChild || startSpan, start.offset);
     range.setEnd(endSpan.firstChild || endSpan, end.offset);
 
@@ -111,8 +121,8 @@ export default function TextDisplay({ text, setText }) {
   }, [text, selection]);
 
   /** Inserimento testo o sostituzione selezione */
-  const changeText = (key) => {
-    const { start, end } = selection;
+  const changeText = (key, sel = selection) => {
+    const { start, end } = sel;
     let updatedText = text.map(t => ({ ...t }));
 
     if (isCursor(start, end)) {
@@ -142,52 +152,113 @@ export default function TextDisplay({ text, setText }) {
   };
 
   const moveCursorLeft = (shiftKey) => {
-    const { end, start } = selection;
+    const { start, end } = selection;
+    let updatedStart = { node: start.node, offset: start.offset };
 
-    // Calcola nuova posizione di fine
-    let updatedEnd = { node: end.node, offset: end.offset };
-    if (end.offset === 0) {
-      if (end.node === 0) return;
-      updatedEnd.node--;
-      updatedEnd.offset = text[updatedEnd.node].text.length - 1;
+    if (start.offset === 0) {
+      if (start.node === 0) return selection;
+      updatedStart.node--;
+      updatedStart.offset = text[updatedStart.node].text.length - 1;
     } else {
-      updatedEnd.offset--;
+      updatedStart.offset--;
     }
 
-    // Calcola nuova posizione di inizio (se shift è attivo mantieni l'originale)
-    const updatedSelection = updateSelection(updatedEnd, start, shiftKey);
-
-    setSelection(updatedSelection);
+    return {
+      start: updatedStart,
+      end: {
+        node: shiftKey ? end.node : updatedStart.node,
+        offset: shiftKey ? end.offset : updatedStart.offset,
+      },
+    };
   };
 
   const moveCursorRight = (shiftKey) => {
     const { start, end } = selection;
-
-    // Calcola nuova posizione di fine
     let updatedEnd = { node: end.node, offset: end.offset };
-    if (end.offset === text[end.node].text.length) {
-      if (end.node === text.length - 1) return;
 
+    if (end.offset === text[end.node].text.length) {
+      if (end.node === text.length - 1) return selection;
       updatedEnd.node++;
-      updatedEnd.offset = 0;
+      updatedEnd.offset = 1;
     } else {
       updatedEnd.offset++;
     }
 
-    // Calcola nuova posizione di inizio (se shift è attivo mantieni l'originale)
-    const updatedSelection = updateSelection(updatedEnd, start, shiftKey);
-
-    setSelection(updatedSelection);
+    return {
+      start: {
+        node: shiftKey ? start.node : updatedEnd.node,
+        offset: shiftKey ? start.offset : updatedEnd.offset,
+      },
+      end: updatedEnd,
+    };
   };
 
-  // Funzione comune per calcolare start/end
-  const updateSelection = (newEnd, start, shiftKey) => ({
-    start: {
-      node: shiftKey ? start.node : newEnd.node,
-      offset: shiftKey ? start.offset : newEnd.offset,
-    },
-    end: newEnd,
-  });
+  const handleBackspace = () => {
+    if (isCursor(selection.start, selection.end)) {
+      const newSel = moveCursorLeft(true);
+      changeText("", newSel);
+    } else {
+      changeText("", selection);
+    }
+  };
+
+  const handleDelete = () => {
+    if (isCursor(selection.start, selection.end)) {
+      const newSel = moveCursorRight(true);
+      changeText("", newSel);
+    } else {
+      changeText("", selection);
+    }
+  };
+
+  const insertNewLine = () => {
+    changeText("\n", selection);
+  }
+
+  const copySelection = () => {
+    const { start, end } = selection;
+    if (isCursor(start, end)) return; // niente da copiare se è solo cursore
+
+    let copied = "";
+
+    if (start.node === end.node) {
+      // selezione all'interno dello stesso nodo
+      copied = text[start.node].text.slice(start.offset, end.offset);
+    } else {
+      // parte iniziale dal nodo start
+      copied += text[start.node].text.slice(start.offset);
+
+      // nodi intermedi
+      for (let i = start.node + 1; i < end.node; i++) {
+        copied += text[i].text;
+      }
+
+      // parte finale dal nodo end
+      copied += text[end.node].text.slice(0, end.offset);
+    }
+
+    // Copia negli appunti
+    navigator.clipboard.writeText(copied).catch(err => {
+      console.error("Errore nella copia:", err);
+    });
+  };
+
+  const pasteClipboard = async () => {
+    try {
+      // prendiamo il testo dagli appunti
+      const clipText = await navigator.clipboard.readText();
+      // lo inseriamo nel testo
+      changeText(clipText, selection);
+    } catch (err) {
+      alert("Errore durante la lettura dagli appunti:", err);
+    }
+  };
+
+  const cutSelection = () => {
+    if(isCursor(selection.start, selection.end)) return;
+    copySelection();
+    changeText("", selection);
+  }
 
   return (
     <>
@@ -226,5 +297,4 @@ export default function TextDisplay({ text, setText }) {
   );
 }
 
-// tutte le funzioni
-// moveLeft non seleziona bene
+// inserire funzioni di stile e undo e redo
